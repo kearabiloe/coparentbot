@@ -154,5 +154,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 ANTHROPIC_API_KEY=env('ANTHROPIC_API_KEY')

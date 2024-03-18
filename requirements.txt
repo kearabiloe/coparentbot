@@ -18,7 +18,6 @@ django-tastypie==0.14.6
 djangorestframework==3.14.0
 environ==1.0
 exceptiongroup==1.2.0
-fcm-django==2.0.1
 filelock==3.13.1
 firebase-admin==6.5.0
 fsspec==2024.3.0

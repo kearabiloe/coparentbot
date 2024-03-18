@@ -1,0 +1,22 @@
+{% extends 'coparentbot/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Parenting Plan{% endblock %}
+
+{% block content %}
+    <h1>Parenting Plan</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    
+    <h2>Parenting Plans</h2>
+    <ul>
+        {% for plan in parenting_plans %}
+            <li>{{ plan.parent1_name }} - {{ plan.parent2_name }}</li>
+        {% empty %}
+            <li>No parenting plans available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

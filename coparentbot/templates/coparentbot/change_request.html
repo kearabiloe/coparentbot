@@ -1,0 +1,22 @@
+{% extends 'coparentbot/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Change Request{% endblock %}
+
+{% block content %}
+    <h1>Change Request</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    
+    <h2>Change Requests</h2>
+    <ul>
+        {% for request in change_requests %}
+            <li>{{ request.requesting_parent }} - {{ request.description }}</li>
+        {% empty %}
+            <li>No change requests available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

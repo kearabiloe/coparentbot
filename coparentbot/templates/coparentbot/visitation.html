@@ -1,0 +1,22 @@
+{% extends 'coparentbot/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Visitation{% endblock %}
+
+{% block content %}
+    <h1>Visitation</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    
+    <h2>Visitations</h2>
+    <ul>
+        {% for visitation in visitations %}
+            <li>{{ visitation.parent }} - {{ visitation.start_datetime }} to {{ visitation.end_datetime }}</i>
+        {% empty %}
+        <li>No visitations available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

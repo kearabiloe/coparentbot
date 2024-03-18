@@ -1,0 +1,126 @@
+<!-- coparentbot/templates/coparentbot/whatsapp_demo.html -->
+{% extends 'coparentbot/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>WhatsApp Demo</h1>
+    <form method="get">
+        <select name="plan_id" onchange="this.form.submit()">
+            <option value="">Select a parenting plan</option>
+            {% for plan in parenting_plans %}
+                <option value="{{ plan.id }}" {% if plan.id == selected_plan.id %}selected{% endif %}>{{ plan.parent1.user.username }} - {{ plan.parent2.user.username }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#parentingPlanModal">Create Parenting Plan</button>
+
+    {% if selected_plan %}
+        <div class="row">
+            <div class="col-md-6">
+                <h3>{{ selected_plan.parent1.user.username }}</h3>
+                <div class="message-box" style="height: 300px; overflow-y: scroll;">
+                    {% for message in conversation %}
+                        {% if message.parent == selected_plan.parent1 %}
+                            <div class="message-bubble sent">
+                                <p>{{ message.message }}</p>
+                            </div>
+                        {% elif message.parent == selected_plan.parent2 %}
+                            <div class="message-bubble received">
+                                <p>{{ message.message }}</p>
+                            </div>
+                        {% elif not message.parent and message.intended_parent == selected_plan.parent1 %}
+                            <div class="alert alert-warning">
+                                <strong>Moderator:</strong> {{ message.message }}
+                            </div>
+                        {% elif not message.parent %}
+                            <div class="alert alert-info">
+                                <strong>Moderator:</strong> {{ message.message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ parent_a_form|crispy }}
+                    <button type="submit" name="parent_a_message" class="btn btn-primary">Send</button>
+                </form>
+            </div>
+<div class="col-md-6">
+    <h3>{{ selected_plan.parent2.user.username }}</h3>
+    <div class="message-box" style="height: 300px; overflow-y: scroll;">
+        {% for message in conversation %}
+            {% if message.parent == selected_plan.parent2 %}
+            <div class="message-bubble sent">
+            <p>{{ message.message }}</p>
+            </div>
+            {% elif message.parent == selected_plan.parent1 %}
+            <div class="message-bubble received">
+                <p>{{ message.message }}</p>
+            </div>
+            {% elif not message.parent and message.intended_parent == selected_plan.parent2 %}
+            <div class="alert alert-warning">
+                <strong>Moderator:</strong> {{ message.message }}
+            </div>
+            {% elif not message.parent %}
+            <div class="alert alert-info">
+                <strong>Moderator:</strong> {{ message.message }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <form method="post">
+    {% csrf_token %}
+    {{ parent_b_form|crispy }}
+    <button type="submit" name="parent_b_message" class="btn btn-primary">Send</button>
+    </form>
+</div>
+</div>
+{% endif %}
+
+<!-- Parenting Plan Modal -->
+<div class="modal fade" id="parentingPlanModal" tabindex="-1" role="dialog" aria-labelledby="parentingPlanModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="parentingPlanModalLabel">Create Parenting Plan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ parenting_plan_form|crispy }}
+                    <button type="submit" name="parenting_plan_form" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.message-bubble {
+margin-bottom: 10px;
+padding: 10px;
+border-radius: 10px;
+max-width: 70%;
+}
+.message-bubble.sent {
+background-color: #DCF8C6;
+align-self: flex-end;
+margin-left: auto;
+}
+.message-bubble.received {
+background-color: #FFFFFF;
+align-self: flex-start;
+margin-right: auto;
+}
+.alert-warning {
+background-color: #FFF3CD;
+color: #856404;
+}
+</style>
+{% endblock %}

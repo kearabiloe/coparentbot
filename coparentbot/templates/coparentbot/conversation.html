@@ -1,0 +1,22 @@
+{% extends 'coparentbot/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Conversation{% endblock %}
+
+{% block content %}
+    <h1>Conversation</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    
+    <h2>Conversations</h2>
+    <ul>
+        {% for conversation in conversations %}
+            <li>{{ conversation.parent }} - {{ conversation.message }}</li>
+        {% empty %}
+            <li>No conversations available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

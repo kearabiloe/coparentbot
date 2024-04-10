@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from .models import ParentingPlan, Visitation, ChangeRequest, Conversation, Parent
 from .forms import ParentingPlanForm, VisitationForm, ChangeRequestForm, ConversationForm,ParentMessageForm
 from anthropic import Anthropic
+from openai import OpenAI
 
+openai_client = OpenAI()
 
 anthropic = Anthropic()
+
+default_ai = False # Default is anthropic
 
 def parenting_plan(request):
     if request.method == 'POST':
@@ -114,15 +118,29 @@ def moderate_conversation(conversation):
     conversation_history = [
         f"{message.parent.user.username if message.parent else 'Moderator'}: {message.message}" for message in conversation
     ]
-    system_prompt = "You are a conversation moderator for co-parenting. Analyze the conversation and provide a response to help the parents communicate effectively."
+    system_prompt = "You are a conversation intemediary and moderator for co-parenting. Parents communicate through you meaning each parent will message you and you will refomulate the message and send it to the indended party, vice versa. Analyze the conversation and provide a response to help the parents communicate effectively. if there is nothing to correct simply return the original message as it is."
     human_prompt = "\n\nHuman: " + "\n".join(conversation_history)
     prompt = system_prompt + human_prompt + "\n\nAssistant:"
-    response = anthropic.completions.create(
-        prompt=prompt,
-        max_tokens_to_sample=150,
-        model='claude-v1',
-    )
-    moderated_response = response.completion.strip()
+
+    if default_ai:
+        response = anthropic.completions.create(
+            prompt=prompt,
+            max_tokens_to_sample=150,
+            model='claude-v1',
+        )
+        moderated_response = response.completion.strip()
+    else:
+        response = openai_client.chat.completions.create(
+          model="gpt-3.5-turbo",
+          messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt},
+            # {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
+          ]
+        )        
+        moderated_response = response.choices[0].message.content
+        # breakpoint()
+
     # Extract the intended parent from the moderated response
     intended_parent = None
     if 'Parent A' in moderated_response:

@@ -20,10 +20,11 @@ from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
 from tastypie.api import Api
-from coparentbot.api import ParentingPlanResource, VisitationResource, ChangeRequestResource, ConversationResource
+from coparentbot.api import ParentingPlanResource, VisitationResource, ChangeRequestResource, ConversationResource, ParentResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(ParentingPlanResource())
+v1_api.register(ParentResource())
 v1_api.register(VisitationResource())
 v1_api.register(ChangeRequestResource())
 v1_api.register(ConversationResource())
